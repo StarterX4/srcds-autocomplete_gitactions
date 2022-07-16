@@ -1,0 +1,175 @@
+name: build
+
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - LICENSE
+      - README.md
+  pull_request:
+    paths-ignore:
+      - LICENSE
+      - README.md
+  schedule:
+    - cron: '30 03 01 */3 *' # Artifacts expire every 3 months
+
+jobs:
+  build:
+    name: build with sm${{ matrix.sm_version }} on ${{ matrix.os_short }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+
+        sm_version:
+          - "1.11"
+
+        mm_version:
+          - "1.11"
+
+        include:
+          - mm_version: "1.11"
+            mm_branch: "1.11-dev"
+
+          - sm_version: "1.11"
+            sm_branch: "1.11-dev"
+
+          - os: ubuntu-latest
+            os_short: linux
+
+    steps:
+      - name: Prepare env
+        shell: bash
+        run: |
+          echo "GITHUB_SHA_SHORT=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+      - name: Install (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install -y clang g++-multilib
+          echo "CC=ccache clang" >> $GITHUB_ENV
+          echo "CXX=ccache clang++" >> $GITHUB_ENV
+
+      - name: Ccache for gh actions
+        # You may pin to the exact commit or the version.
+        # uses: hendrikmuhs/ccache-action@ed038da2f2f09b0c8387c00e1498290a4808da2e
+        uses: hendrikmuhs/ccache-action@v1.2.2
+        #with:
+          # An additional key for the cache
+          #key: # optional
+          # An ordered list of keys to use for restoring the cache if no cache hit occurred for key
+          #restore-keys: # optional
+          # Max size of the cache
+          #max-size: # optional, default is 500M
+          # Verbosity level: 0 (default), 1 or 2. Ignore for sccache.
+          #verbose: # optional, default is 0
+          # Ccache variant to use. Either "ccache" (the default) or "sccache" (see https://github.com/mozilla/sccache)
+          #variant: # optional, default is ccache
+          # If 'false', do not save the cache, only restore.
+          #save: # optional, default is true
+        
+      - name: Checking out SourceMod
+        uses: actions/checkout@v2
+        with:
+          repository: alliedmodders/sourcemod
+          ref: ${{ matrix.sm_branch }}
+          path: sourcemod-${{ matrix.sm_version }}
+          submodules: recursive
+
+      - name: Checking out MM:Source
+        uses: actions/checkout@v2
+        with:
+          repository: alliedmodders/metamod-source
+          ref: ${{ matrix.mm_branch }}
+          path: metamod-${{ matrix.mm_version }}
+
+      - name: Checking out AMBuild
+        uses: actions/checkout@v2
+        with:
+          repository: accelerator74/ambuild
+          path: ambuild
+
+      - name: Setting up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Setting up ambuild
+        working-directory: ambuild
+        run: python setup.py install
+
+      - name: Checking out hl2sdk-l4d2
+        uses: actions/checkout@v2
+        with:
+          repository: alliedmodders/hl2sdk
+          ref: l4d2
+          path: ambuild/hl2sdk-l4d2
+
+      - name: Checking out hl2sdk-sdk2013
+        uses: actions/checkout@v2
+        with:
+          repository: alliedmodders/hl2sdk
+          ref: sdk2013
+          path: ambuild/hl2sdk-sdk2013
+
+      - name: Checking out hl2sdk-tf2
+        uses: actions/checkout@v2
+        with:
+          repository: brysondev/hl2sdk
+          ref: tf2
+          path: ambuild/hl2sdk-tf2
+
+      - name: Checking out own repository
+        uses: actions/checkout@v2
+        with:
+          path: autocomplete
+
+      - name: Compiling Srcds-Autocomplete files
+        working-directory: autocomplete
+        run: |
+          mkdir build
+          cd build
+          python ../configure.py --enable-optimize -s present --hl2sdk-root "${{ github.workspace }}/ambuild" --sm-path="${{ github.workspace }}/sourcemod-${{ matrix.sm_version }}" --mms-path="${{ github.workspace }}/metamod-${{ matrix.mm_version }}"
+          ambuild
+
+      - name: Uploading package
+        uses: actions/upload-artifact@v2
+        with:
+          name: autocomplete-sm${{ matrix.sm_version }}-${{ matrix.os_short }}-${{ env.GITHUB_SHA_SHORT }}
+          path: autocomplete/build/package
+
+      - name: tar.zst
+        run: tar --zstd -cvf autocomplete-sm${{ matrix.sm_version }}-${{ matrix.os_short }}-${{ env.GITHUB_SHA_SHORT }}.tar.zst autocomplete/build/package/
+
+      - name: Create Draft Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: sm${{ matrix.sm_version }}-${{ env.GITHUB_SHA_SHORT }}
+          release_name: ${{ steps.create_tag.outputs.tag }}
+          draft: true
+          prerelease: false
+         
+      - name: Upload built ext
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+         upload_url: ${{ steps.create_release.outputs.upload_url }}
+         asset_path: ./autocomplete-sm${{ matrix.sm_version }}-${{ matrix.os_short }}-${{ env.GITHUB_SHA_SHORT }}.tar.zst
+         asset_name: autocomplete-sm${{ matrix.sm_version }}-${{ matrix.os_short }}-${{ env.GITHUB_SHA_SHORT }}.tar.zst
+         asset_content_type: application/zip
+         
+      - name: Publish
+        uses: eregon/publish-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          release_id: ${{ steps.create_release.outputs.id }}
