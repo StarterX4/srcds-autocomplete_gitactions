@@ -143,6 +143,9 @@ jobs:
           name: autocomplete-sm${{ matrix.sm_version }}-${{ matrix.os_short }}-${{ env.GITHUB_SHA_SHORT }}
           path: autocomplete/build/package
 
+      - name: tar.zst
+        run: tar -cvf --zstd autocomplete-sm${{ matrix.sm_version }}-${{ matrix.os_short }}-${{ env.GITHUB_SHA_SHORT }}.tar.zst autocomplete/build/package
+
       - name: Create Draft Release
         id: create_release
         uses: actions/create-release@v1
@@ -160,9 +163,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
          upload_url: ${{ steps.create_release.outputs.upload_url }}
-         asset_path: autocomplete/build/autocomplete-sm${{ matrix.sm_version }}-${{ matrix.os_short }}-${{ env.GITHUB_SHA_SHORT }}
-         asset_name: autocomplete-sm${{ matrix.sm_version }}-${{ matrix.os_short }}-${{ env.GITHUB_SHA_SHORT }}
-         asset_content_type: application/zip
+         asset_path: ./autocomplete-sm${{ matrix.sm_version }}-${{ matrix.os_short }}-${{ env.GITHUB_SHA_SHORT }}.tar.zst
+         asset_name: autocomplete-sm${{ matrix.sm_version }}-${{ matrix.os_short }}-${{ env.GITHUB_SHA_SHORT }}.tar.zst
+         asset_content_type: application/zstd
          
       - name: Publish
         uses: eregon/publish-release@v1
