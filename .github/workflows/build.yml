@@ -130,6 +130,7 @@ jobs:
         run: |
           mkdir build
           cd build
+          cp ../AMBuildScript ../../
           python ../configure.py --enable-optimize --sm-path="${{ github.workspace }}/sourcemod-${{ matrix.sm_version }}" --mms-path="${{ github.workspace }}/metamod-${{ matrix.mm_version }}"
           ambuild
 
