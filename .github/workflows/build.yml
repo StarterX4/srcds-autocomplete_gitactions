@@ -52,9 +52,27 @@ jobs:
           sudo dpkg --add-architecture i386
           sudo apt-get update
           sudo apt-get install -y clang g++-multilib
-          echo "CC=clang" >> $GITHUB_ENV
-          echo "CXX=clang++" >> $GITHUB_ENV
-
+          echo "CC=ccache clang" >> $GITHUB_ENV
+          echo "CXX=ccache clang++" >> $GITHUB_ENV
+		  
+      - name: Ccache for gh actions
+ 			 # You may pin to the exact commit or the version.
+			 # uses: hendrikmuhs/ccache-action@ed038da2f2f09b0c8387c00e1498290a4808da2e
+			 uses: hendrikmuhs/ccache-action@v1.2.2
+    	 with:
+         # An additional key for the cache
+         key: # optional
+         # An ordered list of keys to use for restoring the cache if no cache hit occurred for key
+         restore-keys: # optional
+         # Max size of the cache
+         max-size: # optional, default is 500M
+         # Verbosity level: 0 (default), 1 or 2. Ignore for sccache.
+         verbose: # optional, default is 0
+         # Ccache variant to use. Either "ccache" (the default) or "sccache" (see https://github.com/mozilla/sccache)
+         variant: # optional, default is ccache
+         # If 'false', do not save the cache, only restore.
+         save: # optional, default is true
+        
       - name: Checking out SourceMod
         uses: actions/checkout@v2
         with:
@@ -142,7 +160,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
          upload_url: ${{ steps.create_release.outputs.upload_url }}
-         asset_path: autocomplete/build/package/autocomplete-sm${{ matrix.sm_version }}-${{ matrix.os_short }}-${{ env.GITHUB_SHA_SHORT }}
+         asset_path: autocomplete/build/autocomplete-sm${{ matrix.sm_version }}-${{ matrix.os_short }}-${{ env.GITHUB_SHA_SHORT }}
          asset_name: autocomplete-sm${{ matrix.sm_version }}-${{ matrix.os_short }}-${{ env.GITHUB_SHA_SHORT }}
          asset_content_type: application/zip
          
