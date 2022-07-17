@@ -119,6 +119,7 @@ jobs:
           path: autocomplete
 
       - name: Compiling Srcds-Autocomplete files
+        working-directory: autocomplete
         run: |
           mkdir build
           cd build
