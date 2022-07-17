@@ -82,9 +82,8 @@ jobs:
           python-version: '3.x'
 
       - name: Setting up ambuild
-        run: |
-          cd ambuild
-          python setup.py install
+        working-directory: ambuild
+        run: python setup.py install
 
       - name: Checking out hl2sdk-l4d2
         uses: actions/checkout@v2
@@ -120,12 +119,11 @@ jobs:
           path: autocomplete
 
       - name: Compiling Srcds-Autocomplete files
-        working-directory: autocomplete
         run: |
           mkdir build
           cd build
           cp ../AMBuildScript ../../
-          python ../configure.py --enable-optimize -s present --hl2sdk-root ../ambuild --sm-path="${{ github.workspace }}/sourcemod-${{ matrix.sm_version }}" --mms-path="${{ github.workspace }}/metamod-${{ matrix.mm_version }}"
+          python ../configure.py --enable-optimize -s present --hl2sdk-root "${{ github.workspace }}/ambuild" --sm-path="${{ github.workspace }}/sourcemod-${{ matrix.sm_version }}" --mms-path="${{ github.workspace }}/metamod-${{ matrix.mm_version }}"
           ambuild
 
       - name: Uploading package
