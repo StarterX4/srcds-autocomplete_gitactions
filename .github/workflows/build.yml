@@ -144,7 +144,7 @@ jobs:
           path: autocomplete/build/package
 
       - name: tar.zst
-        run: tar -cvf --zstd autocomplete-sm${{ matrix.sm_version }}-${{ matrix.os_short }}-${{ env.GITHUB_SHA_SHORT }}.tar.zst autocomplete/build/package
+        run: tar -cvf --zstd autocomplete-sm${{ matrix.sm_version }}-${{ matrix.os_short }}-${{ env.GITHUB_SHA_SHORT }}.tar.zst -C autocomplete/build/package
 
       - name: Create Draft Release
         id: create_release
