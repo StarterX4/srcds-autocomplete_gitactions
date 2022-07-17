@@ -82,8 +82,9 @@ jobs:
           python-version: '3.x'
 
       - name: Setting up ambuild
-        working-directory: ambuild
-        run: python setup.py install
+        run: |
+          cd ambuild
+          pip install ./ambuild
 
       - name: Checking out hl2sdk-l4d2
         uses: actions/checkout@v2
