@@ -106,13 +106,6 @@ jobs:
           ref: tf2
           path: ambuild/hl2sdk-tf2
 
-      - name: Checking out hl2sdk-csgo
-        uses: actions/checkout@v2
-        with:
-          repository: alliedmodders/hl2sdk
-          ref: csgo
-          path: ambuild/hl2sdk-csgo
-
       - name: Checking out own repository
         uses: actions/checkout@v2
         with:
