@@ -91,28 +91,28 @@ jobs:
         with:
           repository: alliedmodders/hl2sdk
           ref: l4d2
-          path: hl2sdk-l4d2
+          path: ambuild/hl2sdk-l4d2
 
       - name: Checking out hl2sdk-sdk2013
         uses: actions/checkout@v2
         with:
           repository: alliedmodders/hl2sdk
           ref: sdk2013
-          path: hl2sdk-sdk2013
+          path: ambuild/hl2sdk-sdk2013
 
       - name: Checking out hl2sdk-tf2
         uses: actions/checkout@v2
         with:
           repository: brysondev/hl2sdk
           ref: tf2
-          path: hl2sdk-tf2
+          path: ambuild/hl2sdk-tf2
 
       - name: Checking out hl2sdk-csgo
         uses: actions/checkout@v2
         with:
           repository: alliedmodders/hl2sdk
           ref: csgo
-          path: hl2sdk-csgo
+          path: ambuild/hl2sdk-csgo
 
       - name: Checking out own repository
         uses: actions/checkout@v2
