@@ -84,7 +84,7 @@ jobs:
       - name: Setting up ambuild
         run: |
           cd ambuild
-          pip install ./ambuild
+          python setup.py install
 
       - name: Checking out hl2sdk-l4d2
         uses: actions/checkout@v2
