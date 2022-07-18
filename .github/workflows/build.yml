@@ -123,6 +123,34 @@ jobs:
           repository: brysondev/hl2sdk
           ref: tf2
           path: ambuild/hl2sdk-tf2
+          
+      - name: Checking out hl2sdk-csgo
+        uses: actions/checkout@v2
+        with:
+          repository: alliedmodders/hl2sdk
+          ref: csgo
+          path: ambuild/hl2sdk-csgo
+          
+      - name: Checking out hl2sdk-css
+        uses: actions/checkout@v2
+        with:
+          repository: alliedmodders/hl2sdk
+          ref: css
+          path: ambuild/hl2sdk-css
+          
+      - name: Checking out hl2sdk-bms
+        uses: actions/checkout@v2
+        with:
+          repository: alliedmodders/hl2sdk
+          ref: bms
+          path: ambuild/hl2sdk-bms
+          
+      - name: Checking out hl2sdk-l4d
+        uses: actions/checkout@v2
+        with:
+          repository: alliedmodders/hl2sdk
+          ref: l4d
+          path: ambuild/hl2sdk-l4d
 
       - name: Checking out own repository
         uses: actions/checkout@v2
