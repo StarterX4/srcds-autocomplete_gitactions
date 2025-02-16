@@ -75,7 +75,7 @@ jobs:
           #save: # optional, default is true
         
       - name: Checking out SourceMod
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: alliedmodders/sourcemod
           ref: ${{ matrix.sm_branch }}
@@ -83,14 +83,14 @@ jobs:
           submodules: recursive
 
       - name: Checking out MM:Source
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: alliedmodders/metamod-source
           ref: ${{ matrix.mm_branch }}
           path: metamod-${{ matrix.mm_version }}
 
       - name: Checking out AMBuild
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: accelerator74/ambuild
           path: ambuild
@@ -105,56 +105,56 @@ jobs:
         run: python setup.py install
 
       - name: Checking out hl2sdk-l4d2
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: alliedmodders/hl2sdk
           ref: l4d2
           path: ambuild/hl2sdk-l4d2
 
       - name: Checking out hl2sdk-sdk2013
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: alliedmodders/hl2sdk
           ref: sdk2013
           path: ambuild/hl2sdk-sdk2013
 
       - name: Checking out hl2sdk-tf2
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: brysondev/hl2sdk
           ref: tf2
           path: ambuild/hl2sdk-tf2
           
       - name: Checking out hl2sdk-csgo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: alliedmodders/hl2sdk
           ref: csgo
           path: ambuild/hl2sdk-csgo
           
       - name: Checking out hl2sdk-css
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: alliedmodders/hl2sdk
           ref: css
           path: ambuild/hl2sdk-css
           
       - name: Checking out hl2sdk-bms
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: alliedmodders/hl2sdk
           ref: bms
           path: ambuild/hl2sdk-bms
           
       - name: Checking out hl2sdk-l4d
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: alliedmodders/hl2sdk
           ref: l4d
           path: ambuild/hl2sdk-l4d
 
       - name: Checking out own repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           path: autocomplete
 
@@ -167,7 +167,7 @@ jobs:
           ambuild
 
       - name: Uploading package
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: autocomplete-sm${{ matrix.sm_version }}-${{ matrix.os_short }}-${{ env.GITHUB_SHA_SHORT }}
           path: autocomplete/build/package
